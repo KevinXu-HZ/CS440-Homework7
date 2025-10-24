@@ -1,0 +1,3 @@
+helko,hello
+witjout,without
+peopie,people
