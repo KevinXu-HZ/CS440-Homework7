@@ -44,36 +44,34 @@ def training(sentences):
         return {}, {}, {}
 
     states = sorted(states)
-    alpha_init = 0.01
-    alpha_trans = 0.01
-    alpha_emit = 0.01
+    alpha = 1.0
 
     total_init = sum(init_counts.values())
     num_states = len(states)
     init_prob = {}
-    denominator_init = total_init + alpha_init * num_states
+    denominator_init = total_init + alpha * num_states
     for state in states:
-        init_prob[state] = (init_counts[state] + alpha_init) / denominator_init if denominator_init > 0 else 1.0 / num_states
+        init_prob[state] = (init_counts[state] + alpha) / denominator_init if denominator_init > 0 else 1.0 / num_states
 
     trans_prob = {}
     for prev_state in states:
         total = sum(trans_counts[prev_state].values())
-        denominator = total + alpha_trans * num_states
+        denominator = total + alpha * num_states
         trans_prob[prev_state] = {}
         for curr_state in states:
             count = trans_counts[prev_state][curr_state]
-            trans_prob[prev_state][curr_state] = (count + alpha_trans) / denominator if denominator > 0 else 1.0 / num_states
+            trans_prob[prev_state][curr_state] = (count + alpha) / denominator if denominator > 0 else 1.0 / num_states
 
     emit_prob = {}
     for state in states:
         counts = emit_counts[state]
         total = sum(counts.values())
         unique = len(counts)
-        denominator = total + alpha_emit * (unique + 1)
+        denominator = total + alpha * (unique + 1)
         emit_prob[state] = {}
         for obs_char, count in counts.items():
-            emit_prob[state][obs_char] = (count + alpha_emit) / denominator if denominator > 0 else emit_epsilon
-        emit_prob[state]['UNSEEN'] = alpha_emit / denominator if denominator > 0 else emit_epsilon
+            emit_prob[state][obs_char] = (count + alpha) / denominator if denominator > 0 else emit_epsilon
+        emit_prob[state]['UNSEEN'] = alpha / denominator if denominator > 0 else emit_epsilon
 
     return init_prob, emit_prob, trans_prob
 
